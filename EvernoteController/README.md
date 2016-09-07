@@ -1,3 +1,6 @@
+> 这份代码基于 github.com/littlecodersh/EasierLife 的2016-09-07快照  
+> 后续我会对这个client进行更新
+
 # EvernoteController 160114
     Aimed at:
         Simplify Evernote API as mush as possible

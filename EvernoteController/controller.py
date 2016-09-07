@@ -20,7 +20,8 @@ class EvernoteController(object):
         self.noteStore = self.client.get_note_store()
         self.storage = Storage()
     def create_notebook(self, title):
-        if self.get(title): return False
+        if self.get(title): 
+            return False
         notebook = Types.Notebook()
         notebook.name = title
         notebook = self.noteStore.createNotebook(notebook)
