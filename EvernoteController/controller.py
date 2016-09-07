@@ -1,4 +1,5 @@
-#coding=utf8
+# -*- coding:utf-8 -*-
+
 import sys, hashlib, re, time
 import evernote.edam.type.ttypes as Types
 import evernote.edam.notestore.NoteStore as NoteStore
@@ -6,8 +7,9 @@ from evernote.api.client import EvernoteClient
 
 from storage import Storage
 
+
 class EvernoteController(object):
-    def __init__(self, token, isSpecialToken = False, sandbox = False, isInternational = False):
+    def __init__(self, token, isSpecialToken=False, sandbox=False, isInternational=False):
         self.token = token
         if sandbox:
             self.client = EvernoteClient(token=self.token)
@@ -19,15 +21,17 @@ class EvernoteController(object):
         self.userStore = self.client.get_user_store()
         self.noteStore = self.client.get_note_store()
         self.storage = Storage()
+
     def create_notebook(self, title):
-        if self.get(title): 
+        if self.get(title):
             return False
         notebook = Types.Notebook()
         notebook.name = title
         notebook = self.noteStore.createNotebook(notebook)
         self.storage.create_notebook(notebook)
         return True
-    def create_note(self, noteFullPath, content = None, fileDir = None):
+
+    def create_note(self, noteFullPath, content=None, fileDir=None):
         if self.get(noteFullPath): return False
         if '/' in noteFullPath:
             notebook = noteFullPath.split('/')[0]
@@ -56,12 +60,13 @@ class EvernoteController(object):
             fileResource.mime = 'application/octet-stream'
             fileResource.attributes = fileAttr
             note.resources = [fileResource]
-            note.content += '<en-media type="application/octet-stream" hash="%s"/>'%fileData.bodyHash
+            note.content += '<en-media type="application/octet-stream" hash="%s"/>' % fileData.bodyHash
         note.content += '</en-note>'
         note = self.noteStore.createNote(note)
         self.storage.create_note(note, notebook)
         return True
-    def update_note(self, noteFullPath, content = None, fileDir = None):
+
+    def update_note(self, noteFullPath, content=None, fileDir=None):
         note = self.get(noteFullPath)
         if note is None: return self.create_note(noteFullPath, content or '', fileDir)
         if '/' in noteFullPath:
@@ -94,12 +99,13 @@ class EvernoteController(object):
             fileResource.mime = 'application/octet-stream'
             fileResource.attributes = fileAttr
             note.resources = [fileResource]
-            note.content += '<en-media type="application/octet-stream" hash="%s"/>'%fileData.bodyHash
+            note.content += '<en-media type="application/octet-stream" hash="%s"/>' % fileData.bodyHash
         note.content += '</en-note>'
         self.noteStore.updateNote(self.token, note)
         self.storage.delete_note(noteFullPath)
         self.storage.create_note(note, notebook)
         return True
+
     def get_content(self, noteFullPath):
         note = self.get(noteFullPath)
         if note is None: return
@@ -109,12 +115,16 @@ class EvernoteController(object):
         except:
             content = ''
         return content
+
     def get_attachment(self, noteFullPath):
         note = self.get(noteFullPath)
-        return {resource.attributes.fileName: self.noteStore.getResourceData(resource.guid) for resource in (note.resources or {})}
+        return {resource.attributes.fileName: self.noteStore.getResourceData(resource.guid) for
+                resource in (note.resources or {})}
+
     def move_note(self, noteFullPath, _to):
         if self.get(noteFullPath) is None: return False
-        if type(self.get(noteFullPath)) != type(Types.Note()) or type(self.get(_to)) != type(Types.Notebook()): raise Exception('Type Error')
+        if type(self.get(noteFullPath)) != type(Types.Note()) or type(self.get(_to)) != type(
+            Types.Notebook()): raise Exception('Type Error')
         self.noteStore.copyNote(self.token, self.get(noteFullPath).guid, self.get(_to).guid)
         if self.isSpecialToken:
             self.noteStore.expungeNote(self.token, self.get(noteFullPath).guid)
@@ -122,6 +132,7 @@ class EvernoteController(object):
             self.noteStore.deleteNote(self.token, self.get(noteFullPath).guid)
         self.storage.move_note(noteFullPath, _to)
         return True
+
     def delete_note(self, noteFullPath):
         if self.get(noteFullPath) is None: return False
         if type(self.get(noteFullPath)) != type(Types.Note()): raise Exception('Types Error')
@@ -131,22 +142,28 @@ class EvernoteController(object):
             self.noteStore.deleteNote(self.token, self.get(noteFullPath).guid)
         self.storage.delete_note(noteFullPath)
         return True
+
     def delete_notebook(self, notebook):
         if self.get(notebook) or not self.isSpecialToken: return False
         if type(self.get(notebook)) != type(Types.Notebook()): raise Exception('Types Error')
         self.noteStore.expungeNotebook(self.token, self.get(notebook).guid)
         self.storage.delete_notebook(notebook)
         return True
+
     def get(self, s):
         return self.storage.get(s)
+
     def show_notebook(self):
         self.storage.show_notebook()
+
     def show_notes(self, notebook=None):
         self.storage.show_notes(notebook)
+
     def _md5(self, s):
         m = hashlib.md5()
         m.update(s)
         return m.hexdigest()
+
 
 if __name__ == '__main__':
     # You can get this from 'https://%s/api/DeveloperToken.action'%SERVICE_HOST >>

@@ -1,4 +1,4 @@
 from controller import EvernoteController
-from oauth import Oauth
+from Oauth import Oauth
 
 __all__ = ['EvernoteController', 'Oauth']
