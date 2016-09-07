@@ -17,7 +17,6 @@ https://github.com/littlecodersh/EasierLife
 Evernote API使用的thrift框架，所有语言的API都是同样的接口定义
 """
 
-
 from evernote.api.client import EvernoteClient
 from evernote.edam import type
 import evernote.edam.type.ttypes as Types
@@ -33,12 +32,11 @@ print userStore.token
 
 user = userStore.getUser()
 
-
 # 这个note_store是最重要的数据API
 note_store = client.get_note_store()
 
 for nb in note_store.listNotebooks():
-    print n.name
+    print nb.name
 
 n = type.ttypes.Note()
 n.title = "First evernote using api"
@@ -46,32 +44,31 @@ n.content = u"哈哈wahahahaha"  # 貌似需要对中文进行编码
 n.content = "haha"
 note_store.createNote(n)
 
-
 note = Types.Note()
 note.title = "Test note from EDAMTest.py"
 note.content = '<?xml version="1.0" encoding="UTF-8"?>'
 note.content += '<!DOCTYPE en-note SYSTEM ' \
-    '"http://xml.evernote.com/pub/enml2.dtd">'
+                '"http://xml.evernote.com/pub/enml2.dtd">'
 note.content += '<en-note>Here is the Evernote logo:<br/>'
 note.content += '</en-note>'
 
 created_note = note_store.createNote(note)
 
 books = note_store.listNotebooks()
-bid = books[1].guid # 拿到第二个笔记本（因为第一个测试笔记本没数据）
-search = {'notebookGuid':bid}
+bid = books[1].guid  # 拿到第二个笔记本（因为第一个测试笔记本没数据）
+search = {'notebookGuid': bid}
 
 results = note_store.findNotesMetadata(
-                NoteStore.NoteFilter(**search), 
-                None, 
-                10, 
-                NoteStore.NotesMetadataResultSpec(
-                    includeTitle=True, includeNotebookGuid=True)
-            )
+    NoteStore.NoteFilter(**search),
+    None,
+    10,
+    NoteStore.NotesMetadataResultSpec(
+        includeTitle=True, includeNotebookGuid=True)
+)
 print results.notes[0].title
-print results.notes[0]content
+print results.notes[0].content
 
-haha = results.notes[0].guid # 'e3570976-3dbd-439e-84fa-98d8d2aae28e'
+haha = results.notes[0].guid  # 'e3570976-3dbd-439e-84fa-98d8d2aae28e'
 n = note_store.getNote(haha, True, False, False, False)
 
 print n.created
