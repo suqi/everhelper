@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+"""
+TODO: 实际操作时发现，重复标题的内容，少部分相同，大部分还有是有些差别，需要人工核对
+怎样方便人工核对呢？--> 应该把这些重复的全部放到一个新的笔记本里，并且表明源笔记本（方便放回去）
+
+TODO: 分析出来的结果可以用web来展示，不然命令行的输出形式不够直观
+"""
+
 from EvernoteController.controller import EvernoteController
 import evernote.edam.notestore.NoteStore as NoteStore
 import collections
